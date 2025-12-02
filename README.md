@@ -50,9 +50,8 @@ line-length = 100
 [rulesets.ruff.lint]
 select = ["E", "F"]
 
-[ai-context]
-source = "github:chrismlittle123/check-my-code-community/prompts@latest"
-templates = ["typescript/5.5@1.0.0", "python/3.12@1.0.0"]
+[prompts]
+templates = ["typescript/5.5", "python/3.12"]
 ```
 
 Then let cmc handle the rest:
@@ -209,9 +208,8 @@ cmc context --target copilot   # Appends to .github/copilot-instructions.md
 Configure which prompts to use:
 
 ```toml
-[ai-context]
-source = "github:chrismlittle123/check-my-code-community/prompts@latest"
-templates = ["typescript/5.5@1.0.0", "python/3.12@1.0.0"]
+[prompts]
+templates = ["typescript/5.5", "python/3.12"]
 ```
 
 ## Design Principles

@@ -19,7 +19,6 @@ line-length = 100
 [rulesets.ruff.lint]
 select = ["E", "F"]
 
-# AI context - pull prompts from community repo
-[ai-context]
-source = "github:chrismlittle123/check-my-code-community/prompts@latest"
-templates = ["typescript/5.5@1.0.0", "python/3.12@1.0.0"]
+# AI prompts - pull from community repo
+[prompts]
+templates = ["typescript/5.5", "python/3.12"]
