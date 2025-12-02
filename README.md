@@ -80,12 +80,17 @@ $ cmc check src/
 
 src/utils.py:4 [ruff/F401] `os` imported but unused
 src/utils.py:5 [ruff/F401] `sys` imported but unused
+src/utils.py:6 [ruff/F401] `json` imported but unused
 src/utils.py:9 [ruff/E501] Line too long (133 > 100)
+src/utils.py:13 [ruff/F841] Local variable `unused_result` is assigned to but never used
 src/example.ts:4 [eslint/no-var] Unexpected var, use let or const instead.
+src/example.ts:5 [eslint/no-var] Unexpected var, use let or const instead.
 src/example.ts:8 [eslint/prefer-const] 'greeting' is never reassigned. Use 'const' instead.
 src/example.ts:11 [eslint/eqeqeq] Expected '===' and instead saw '=='.
+src/example.ts:16 [eslint/no-var] Unexpected var, use let or const instead.
+src/example.ts:17 [eslint/eqeqeq] Expected '!==' and instead saw '!='.
 
-✗ 6 violations found
+✗ 11 violations found
 ```
 
 Both languages. One command. Unified format.
@@ -119,7 +124,7 @@ eslint = "github:chrismlittle123/check-my-code-community/rulesets/typescript/5.5
 ruff = "github:chrismlittle123/check-my-code-community/rulesets/python/3.12/ruff@1.0.0"
 
 # Private repo (your org) - uses SSH keys, no tokens needed
-eslint = "github:your-org/your-standards/rulesets/frontend@2.0.0"
+eslint = "github:your-org/your-standards/rulesets/typescript/5.5/eslint@1.0.0"
 ```
 
 ### Community Repo Structure
@@ -223,18 +228,19 @@ templates = ["typescript/5.5", "python/3.12"]
 
 ## Roadmap
 
-**v1 (Current)** — Unified linting with ESLint and Ruff
+**v1 (Current)** — Unified linting and AI prompts:
+- ESLint + Ruff with unified output
+- Remote ruleset inheritance from community/private repos
+- AI prompt export to Claude, Cursor, Copilot
 
 **v2 (Coming Soon)** — The full vision:
 
 | Category | What's Included |
 |----------|-----------------|
-| **Linting** | ESLint, Ruff (current) |
 | **Formatting** | Prettier, Black |
 | **Type Safety** | TypeScript strict mode, mypy/pyright |
 | **Language Versions** | Node.js, Python version enforcement |
 | **Custom Hooks** | Your own rules (see below) |
-| **AI Prompts** | Coding standards for Claude, Cursor, Copilot |
 
 **Custom Hooks** — Define your own rules in `cmc.toml`:
 
