@@ -2,34 +2,79 @@
 
 **One config. One command. Consistent code quality.**
 
-A CLI tool that uses `cmc.toml` as the single source of truth for coding standards across your organization — linting, formatting, type safety, custom hooks, and AI coding agent prompts — all versioned in a central repository with tier-based enforcement.
+A CLI tool that uses `cmc.toml` as the single source of truth for **all** coding standards across your organization:
+
+| Category | Tools | Status |
+|----------|-------|--------|
+| **Linting** | ESLint, Ruff | v1 ✓ |
+| **AI Prompts** | Claude, Cursor, Copilot | v1 ✓ |
+| **Formatting** | Prettier, Black | v2 |
+| **Type Safety** | TypeScript strict, mypy/pyright | v2 |
+| **Custom Hooks** | Your own rules | v2 |
+
+All versioned in a central repository with tier-based enforcement.
 
 ## The Problem: Configuration Sprawl
 
-Every repository ends up with its own linter configs:
+Every repository ends up with its own configs — not just linters, but formatters, type checkers, AI prompts, everything:
 
 ```
 project-a/
 ├── .eslintrc.json
+├── .prettierrc
 ├── ruff.toml
+├── CLAUDE.md
 └── ...
 
 project-b/
 ├── eslint.config.js      # Different format
-├── pyproject.toml        # Ruff rules buried here
-└── ...
-
-project-c/
-├── .eslintrc.yaml        # Yet another format
-├── ruff.toml             # Slightly different rules
+├── pyproject.toml        # Ruff + Black buried here
+├── .cursorrules          # Different AI prompts
 └── ...
 ```
 
-Over time, configs drift. Teams lose consistency. New projects copy-paste outdated rules.
+Over time, configs drift. Teams lose consistency. New projects copy-paste outdated rules. AI assistants get different instructions everywhere.
+
+## The Vision: One Central Repository
+
+Define **everything** in one place:
+
+```
+your-org-standards/
+├── rulesets/           # Linting rules
+├── formatters/         # Formatting configs (v2)
+├── type-safety/        # Type checker configs (v2)
+├── prompts/            # AI coding standards
+├── hooks/              # Custom validation rules (v2)
+└── tiers/              # Production vs prototype configs
+    ├── production/
+    ├── internal-tool/
+    └── prototype/
+```
+
+Each project just points to what it needs:
+
+```toml
+[project]
+name = "payment-service"
+
+[extends]
+eslint = "github:your-org/standards/tiers/production/rulesets/typescript/5.5/eslint@1.0.0"
+ruff = "github:your-org/standards/tiers/production/rulesets/python/3.12/ruff@1.0.0"
+
+[prompts]
+templates = ["typescript/5.5", "python/3.12"]
+```
+
+**One repo, versioned tiers, organization-wide consistency.**
+
+---
+
+# What Works Today (v1)
 
 ## The Solution: cmc.toml
 
-Define your standards once:
+Define your linting standards once:
 
 ```toml
 [project]
@@ -159,7 +204,7 @@ Set up the same structure for company-specific standards:
 
 ## Tier-Based Coding Standards
 
-This is the core problem cmc solves: **different projects need different levels of rigor**.
+Different projects need different levels of rigor.
 
 A production API needs strict type safety and zero violations. A hackathon prototype? Just needs to run.
 
@@ -193,8 +238,6 @@ eslint = "github:your-org/standards/tiers/production/rulesets/typescript/5.5/esl
 ruff = "github:your-org/standards/tiers/production/rulesets/python/3.12/ruff@1.0.0"
 ```
 
-**One repo, versioned tiers, organization-wide consistency.**
-
 ## AI Integration
 
 Export coding standards to AI assistants so they follow your rules:
@@ -217,32 +260,50 @@ Configure which prompts to use:
 templates = ["typescript/5.5", "python/3.12"]
 ```
 
-## Design Principles
+---
 
-- **Central, versioned repository** — All standards in one place, with semantic versioning
-- **Tier-based enforcement** — Different projects, different rules, same infrastructure
-- **cmc.toml is authoritative** — It's the source of truth, not the generated configs
-- **Graceful degradation** — Works with whatever linters you have installed
-- **Delegates to native tools** — cmc doesn't reinvent linting/formatting, it orchestrates
-- **AI-agnostic** — Export to any coding assistant
+# What's Coming (v2)
 
-## Roadmap
+## Formatting
 
-**v1 (Current)** — Unified linting and AI prompts:
-- ESLint + Ruff with unified output
-- Remote ruleset inheritance from community/private repos
-- AI prompt export to Claude, Cursor, Copilot
+Prettier and Black, unified under cmc:
 
-**v2 (Coming Soon)** — The full vision:
+```toml
+[formatters.prettier]
+semi = false
+singleQuote = true
 
-| Category | What's Included |
-|----------|-----------------|
-| **Formatting** | Prettier, Black |
-| **Type Safety** | TypeScript strict mode, mypy/pyright |
-| **Language Versions** | Node.js, Python version enforcement |
-| **Custom Hooks** | Your own rules (see below) |
+[formatters.black]
+line-length = 100
+```
 
-**Custom Hooks** — Define your own rules in `cmc.toml`:
+```bash
+cmc format              # Run all formatters
+cmc generate prettier   # Generate .prettierrc
+cmc generate black      # Generate pyproject.toml
+```
+
+## Type Safety
+
+TypeScript and Python type checking:
+
+```toml
+[type-safety.typescript]
+strict = true
+noImplicitAny = true
+
+[type-safety.python]
+tool = "mypy"
+strict = true
+```
+
+```bash
+cmc typecheck           # Run type checkers
+```
+
+## Custom Hooks
+
+Define your own validation rules:
 
 ```toml
 [hooks.directory-naming]
@@ -262,7 +323,16 @@ paths = ["src/**/*.ts"]
 message = "All source files must have a license header"
 ```
 
-**The goal:** One central repository. Versioned tiers. Everything enforced — linting, formatting, types, conventions, AI behavior — across your entire organization.
+---
+
+## Design Principles
+
+- **Central, versioned repository** — All standards in one place, with semantic versioning
+- **Tier-based enforcement** — Different projects, different rules, same infrastructure
+- **cmc.toml is authoritative** — It's the source of truth, not the generated configs
+- **Graceful degradation** — Works with whatever tools you have installed
+- **Delegates to native tools** — cmc doesn't reinvent linting/formatting, it orchestrates
+- **AI-agnostic** — Export to any coding assistant
 
 ## Quick Start
 
