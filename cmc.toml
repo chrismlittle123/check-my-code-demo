@@ -1,0 +1,30 @@
+[project]
+name = "check-my-code-demo"
+
+# Inherit rulesets from remote repositories
+[extends]
+# Community standards (public repo)
+eslint = "github:chrismlittle123/check-my-code-community/rulesets/typescript/eslint-default@1.0.0"
+ruff = "github:chrismlittle123/check-my-code-community/rulesets/python/ruff-default@latest"
+
+# Company standards (private repo - uses SSH keys)
+# eslint = "github:chrismlittle123/check-my-code-private/rulesets/acme-corp@v2.0.0"
+
+# Local overrides (additive only - can only make rules stricter)
+[rulesets.eslint.rules]
+"no-var" = "error"
+"prefer-const" = "error"
+"eqeqeq" = ["error", "always"]
+
+[rulesets.ruff]
+line-length = 100
+
+[rulesets.ruff.lint]
+select = ["E", "F"]
+
+# AI context - pull prompts from community/private repos
+[ai-context]
+prompts = [
+  "github:chrismlittle123/check-my-code-community/prompts/typescript/strict@latest",
+  "github:chrismlittle123/check-my-code-community/prompts/python/prod@1.0.0"
+]
