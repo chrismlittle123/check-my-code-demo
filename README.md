@@ -2,7 +2,7 @@
 
 **One config. One command. Consistent code quality.**
 
-A CLI tool that uses `cmc.toml` as the single source of truth for linting rules across TypeScript/JavaScript (ESLint) and Python (Ruff) projects.
+A CLI tool that uses `cmc.toml` as the single source of truth for coding standards across your organization — linting, formatting, type safety, custom hooks, and AI coding agent prompts — all versioned in a central repository with tier-based enforcement.
 
 ## The Problem: Configuration Sprawl
 
@@ -35,6 +35,10 @@ Define your standards once:
 [project]
 name = "my-project"
 
+[extends]
+eslint = "github:chrismlittle123/check-my-code-community/rulesets/typescript/5.5/eslint@1.0.0"
+ruff = "github:chrismlittle123/check-my-code-community/rulesets/python/3.12/ruff@1.0.0"
+
 [rulesets.eslint.rules]
 "no-var" = "error"
 "prefer-const" = "error"
@@ -45,6 +49,10 @@ line-length = 100
 
 [rulesets.ruff.lint]
 select = ["E", "F"]
+
+[ai-context]
+source = "github:chrismlittle123/check-my-code-community/prompts@latest"
+templates = ["typescript/5.5@1.0.0", "python/3.12@1.0.0"]
 ```
 
 Then let cmc handle the rest:
@@ -54,6 +62,7 @@ cmc generate eslint    # Creates eslint.config.js
 cmc generate ruff      # Creates ruff.toml
 cmc check              # Runs both linters
 cmc verify             # Ensures configs haven't drifted
+cmc context            # Exports AI coding standards
 ```
 
 ## Commands
@@ -100,45 +109,91 @@ $ cmc verify
   Run 'cmc generate eslint' to fix
 ```
 
-## Example: Inherit from Remote Repositories
+## Remote Repositories: Community & Private
 
-Don't reinvent the wheel. Pull in rulesets and prompts from shared repos:
+Pull rulesets and prompts from shared repositories instead of copy-pasting configs:
+
+```toml
+[extends]
+# Community repo (public) - versioned rulesets for common stacks
+eslint = "github:chrismlittle123/check-my-code-community/rulesets/typescript/5.5/eslint@1.0.0"
+ruff = "github:chrismlittle123/check-my-code-community/rulesets/python/3.12/ruff@1.0.0"
+
+# Private repo (your org) - uses SSH keys, no tokens needed
+eslint = "github:your-org/your-standards/rulesets/frontend@2.0.0"
+```
+
+### Community Repo Structure
+
+The community repo organizes rulesets and prompts by language and version:
+
+```
+check-my-code-community/
+├── rulesets/
+│   ├── typescript/5.5/eslint/
+│   │   └── 1.0.0.toml
+│   └── python/3.12/ruff/
+│       └── 1.0.0.toml
+├── prompts/
+│   ├── typescript/5.5/
+│   │   └── 1.0.0.md
+│   └── python/3.12/
+│       └── 1.0.0.md
+└── rulesets.json / prompts.json   # Manifests
+```
+
+Browse: https://github.com/chrismlittle123/check-my-code-community
+
+### Private Repo for Your Organization
+
+Set up the same structure for company-specific standards:
+- Accessed via SSH keys (no tokens needed)
+- Keep proprietary rules secure
+- Version with semantic versioning
+
+**Additive-only inheritance** — Local rules can only make things *stricter*, never weaker. If the base config says `"no-var" = "error"`, you can't downgrade it to `"warn"`.
+
+## Tier-Based Coding Standards
+
+This is the core problem cmc solves: **different projects need different levels of rigor**.
+
+A production API needs strict type safety and zero violations. A hackathon prototype? Just needs to run.
+
+Define tiers in your organization's private repo:
+
+```
+your-org-standards/
+├── tiers/
+│   ├── production/           # Maximum strictness
+│   │   ├── rulesets/
+│   │   │   ├── typescript/5.5/eslint/1.0.0.toml
+│   │   │   └── python/3.12/ruff/1.0.0.toml
+│   │   └── prompts/
+│   │       └── strict/1.0.0.md
+│   │
+│   ├── internal-tool/        # Moderate strictness
+│   │   └── ...
+│   │
+│   └── prototype/            # Minimal rules
+│       └── ...
+```
+
+Then reference the appropriate tier:
 
 ```toml
 [project]
-name = "my-project"
+name = "payment-service"
 
 [extends]
-# Community standards (public)
-eslint = "github:chrismlittle123/check-my-code-community/rulesets/typescript/eslint-default@1.0.0"
-ruff = "github:chrismlittle123/check-my-code-community/rulesets/python/ruff-default@latest"
-
-# Company standards (private repo - uses your SSH keys)
-eslint = "github:chrismlittle123/check-my-code-private/rulesets/acme-corp@v2.0.0"
-
-[ai-context]
-# Pull prompts from community
-prompts = [
-  "github:chrismlittle123/check-my-code-community/prompts/typescript/strict@latest",
-  "github:chrismlittle123/check-my-code-community/prompts/python/prod@1.0.0"
-]
+eslint = "github:your-org/standards/tiers/production/rulesets/typescript/5.5/eslint@1.0.0"
+ruff = "github:your-org/standards/tiers/production/rulesets/python/3.12/ruff@1.0.0"
 ```
 
-**Community repo** — Open source templates anyone can use:
-- `typescript/strict@latest` — Strict TypeScript standards
-- `python/prod@1.0.0` — Production Python best practices
-- Browse: https://github.com/chrismlittle123/check-my-code-community
+**One repo, versioned tiers, organization-wide consistency.**
 
-**Private repo** — Your organization's internal standards:
-- Company-specific rules and prompts
-- Accessed via SSH keys (no tokens needed)
-- Keep proprietary standards secure
+## AI Integration
 
-**Additive-only inheritance** — You can only make rules *stricter*, never weaker. If the base config says `"no-var" = "error"`, you can't downgrade it to `"warn"`.
-
-## Example: AI Integration
-
-Export your coding standards to AI assistants so they follow your rules:
+Export coding standards to AI assistants so they follow your rules:
 
 ```bash
 # Claude Code
@@ -151,21 +206,39 @@ cmc context --target cursor    # Appends to .cursorrules
 cmc context --target copilot   # Appends to .github/copilot-instructions.md
 ```
 
+Configure which prompts to use:
+
+```toml
+[ai-context]
+source = "github:chrismlittle123/check-my-code-community/prompts@latest"
+templates = ["typescript/5.5@1.0.0", "python/3.12@1.0.0"]
+```
+
 ## Design Principles
 
+- **Central, versioned repository** — All standards in one place, with semantic versioning
+- **Tier-based enforcement** — Different projects, different rules, same infrastructure
 - **cmc.toml is authoritative** — It's the source of truth, not the generated configs
 - **Graceful degradation** — Works with whatever linters you have installed
-- **Delegates to native linters** — cmc doesn't reinvent linting, it orchestrates
+- **Delegates to native tools** — cmc doesn't reinvent linting/formatting, it orchestrates
 - **AI-agnostic** — Export to any coding assistant
 
 ## Roadmap
 
 **v1 (Current)** — Unified linting with ESLint and Ruff
 
-**v2 (Coming Soon)** — Expanding beyond linting:
-- **Formatting** — Prettier, Black, integrated into `cmc check`
-- **Type Safety** — TypeScript strict mode, mypy/pyright for Python
-- **Custom Hooks** — Define your own rules in `cmc.toml`:
+**v2 (Coming Soon)** — The full vision:
+
+| Category | What's Included |
+|----------|-----------------|
+| **Linting** | ESLint, Ruff (current) |
+| **Formatting** | Prettier, Black |
+| **Type Safety** | TypeScript strict mode, mypy/pyright |
+| **Language Versions** | Node.js, Python version enforcement |
+| **Custom Hooks** | Your own rules (see below) |
+| **AI Prompts** | Coding standards for Claude, Cursor, Copilot |
+
+**Custom Hooks** — Define your own rules in `cmc.toml`:
 
 ```toml
 [hooks.directory-naming]
@@ -178,9 +251,14 @@ pattern = "console\\.(log|debug)"
 paths = ["src/**/*.ts"]
 exclude = ["src/**/*.test.ts"]
 severity = "error"
+
+[hooks.require-license-header]
+pattern = "^// Copyright"
+paths = ["src/**/*.ts"]
+message = "All source files must have a license header"
 ```
 
-The goal: one tool to enforce *all* your codebase standards.
+**The goal:** One central repository. Versioned tiers. Everything enforced — linting, formatting, types, conventions, AI behavior — across your entire organization.
 
 ## Quick Start
 
