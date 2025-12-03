@@ -11,6 +11,8 @@ A CLI tool that uses `cmc.toml` as the single source of truth for **all** coding
 | **MCP Server** | For AI coding agents | v1 ✓ |
 | **Formatting** | Prettier, Black | v2 |
 | **Type Safety** | TypeScript strict, mypy/pyright | v2 |
+| **Security Checks** | Exposed secrets, vulnerabilities | v2 |
+| **Complexity Checks** | Dependencies, cyclomatic complexity | v2 |
 | **Custom Hooks** | Your own rules | v2 |
 
 All versioned in a central repository with tier-based enforcement.
@@ -315,6 +317,53 @@ strict = true
 
 ```bash
 cmc typecheck           # Run type checkers
+```
+
+## Security Checks
+
+Catch exposed secrets and vulnerabilities before they hit production:
+
+```toml
+[security]
+# Detect exposed secrets
+secrets = true
+patterns = [
+  "API_KEY",
+  "SECRET",
+  "PASSWORD",
+  "aws_access_key_id"
+]
+
+# Scan for known vulnerabilities
+vulnerabilities = true
+severity = "high"  # Block on high/critical only
+```
+
+```bash
+cmc security            # Run security scans
+```
+
+## Complexity Checks
+
+Keep your codebase maintainable:
+
+```toml
+[complexity]
+# Cyclomatic complexity threshold
+max-complexity = 10
+
+# Maximum dependencies per file
+max-dependencies = 15
+
+# Maximum file length
+max-lines = 500
+
+# Maximum function length
+max-function-lines = 50
+```
+
+```bash
+cmc complexity          # Run complexity analysis
 ```
 
 ## Custom Hooks
