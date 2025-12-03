@@ -415,6 +415,30 @@ max-function-lines = 50
 cmc complexity          # Run complexity analysis
 ```
 
+## Test Coverage
+
+Enforce minimum test coverage thresholds across different test types:
+
+```toml
+[coverage]
+# Minimum coverage thresholds (percentage)
+unit = 80
+integration = 60
+functional = 50
+e2e = 30
+
+# Fail CI if thresholds not met
+enforce = true
+
+# Coverage tool
+tool = "nyc"  # or "coverage.py" for Python
+```
+
+```bash
+cmc coverage            # Run coverage analysis
+cmc coverage --report   # Generate detailed report
+```
+
 ## Custom Hooks
 
 Define your own validation rules:
