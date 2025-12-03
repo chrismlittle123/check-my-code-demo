@@ -13,8 +13,9 @@ A CLI tool that uses `cmc.toml` as the single source of truth for **all** coding
 | **Type Safety** | TypeScript strict, mypy | v2 |
 | **Security Checks** | Exposed secrets, vulnerabilities | v2 |
 | **Complexity Checks** | Dependencies, cyclomatic complexity | v2 |
-| **Custom Hooks** | Your own rules - eg. file naming, versioning, etc. | v2 |
+| **Test Coverage** | Unit, Integration, Functional, E2E Test Coverage | v2 |
 | **Tool Enforcement** | Enforce use of mise, Docker, etc. | v2 |
+| **Custom Hooks** | Your own rules - eg. file naming, versioning, etc. | v2 |
 
 All versioned in a central repository with tier-based enforcement.
 
