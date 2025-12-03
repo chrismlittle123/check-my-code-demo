@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>check-my-code (cmc)</title>
+<style>
+:root {
+  --bg: #0d1117;
+  --fg: #c9d1d9;
+  --accent: #58a6ff;
+  --accent2: #7ee787;
+  --border: #30363d;
+  --code-bg: #161b22;
+}
+* { box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  line-height: 1.6;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  font-size: 16px;
+}
+h1, h2, h3 {
+  color: #fff;
+  font-weight: 600;
+  margin-top: 2em;
+  margin-bottom: 0.5em;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.3em;
+}
+h1 { font-size: 2.5em; border-bottom: 2px solid var(--accent); }
+h2 { font-size: 1.75em; }
+h3 { font-size: 1.25em; border-bottom: none; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+code {
+  background: var(--code-bg);
+  padding: 0.2em 0.4em;
+  border-radius: 6px;
+  font-family: 'SF Mono', Consolas, monospace;
+  font-size: 0.9em;
+}
+pre {
+  background: var(--code-bg);
+  padding: 16px;
+  border-radius: 10px;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+}
+pre code { background: none; padding: 0; font-size: 0.85em; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1em 0;
+  background: var(--code-bg);
+  border-radius: 10px;
+  overflow: hidden;
+}
+th, td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+th { background: #21262d; color: #fff; font-weight: 600; }
+tr:last-child td { border-bottom: none; }
+strong { color: #fff; }
+hr {
+  border: none;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  margin: 3em 0;
+}
+ul, ol { padding-left: 1.5em; }
+li { margin: 0.5em 0; }
+</style>
+</head>
+<body>
+<h1 id="check-my-code-cmc">check-my-code (cmc)</h1>
+<p><strong>One config. One command. Consistent code
+quality.</strong></p>
+<p>A CLI tool that uses <code>cmc.toml</code> as the single source of
+truth for <strong>all</strong> coding standards across your
+organization:</p>
+<table>
+<colgroup>
+<col style="width: 40%" />
+<col style="width: 28%" />
+<col style="width: 32%" />
+</colgroup>
+<thead>
+<tr>
+<th>Category</th>
+<th>Tools</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Linting</strong></td>
+<td>ESLint, Ruff</td>
+<td>v1 ✓</td>
+</tr>
+<tr>
+<td><strong>AI Prompts</strong></td>
+<td>Claude, Cursor, Codex, Gemini</td>
+<td>v1 ✓</td>
+</tr>
+<tr>
+<td><strong>MCP Server</strong></td>
+<td>For AI coding agents</td>
+<td>v1 ✓</td>
+</tr>
+<tr>
+<td><strong>Formatting</strong></td>
+<td>Prettier, Ruff</td>
+<td>v2</td>
+</tr>
+<tr>
+<td><strong>Type Safety</strong></td>
+<td>TypeScript strict, mypy</td>
+<td>v2</td>
+</tr>
+<tr>
+<td><strong>Security Checks</strong></td>
+<td>Exposed secrets, vulnerabilities</td>
+<td>v2</td>
+</tr>
+<tr>
+<td><strong>Complexity Checks</strong></td>
+<td>Dependencies, cyclomatic complexity</td>
+<td>v2</td>
+</tr>
+<tr>
+<td><strong>Test Coverage</strong></td>
+<td>Unit, Integration, Functional, E2E Test Coverage</td>
+<td>v2</td>
+</tr>
+<tr>
+<td><strong>Tool Enforcement</strong></td>
+<td>Enforce use of mise, Docker, MCP servers like context7, etc.</td>
+<td>v2</td>
+</tr>
+<tr>
+<td><strong>Custom Hooks</strong></td>
+<td>Your own rules - eg. file naming, versioning, etc.</td>
+<td>v2</td>
+</tr>
+</tbody>
+</table>
+<p>All versioned in a central repository with tier-based
+enforcement.</p>
+<h2 id="the-problem-configuration-sprawl">The Problem: Configuration
+Sprawl</h2>
+<p>Every repository ends up with its own configs — not just linters, but
+formatters, type checkers, AI prompts, everything:</p>
+<pre><code>project-a/
+├── .eslintrc.json
+├── .prettierrc
+├── ruff.toml
+├── CLAUDE.md
+└── ...
+
+project-b/
+├── eslint.config.js      # Different format
+├── pyproject.toml        # Ruff + Black buried here
+├── .cursorrules          # Different AI prompts
+└── ...</code></pre>
+<p>Over time, configs drift. Teams lose consistency. New projects
+copy-paste outdated rules. AI assistants get different instructions
+everywhere.</p>
+<h2 id="the-vision-one-central-repository">The Vision: One Central
+Repository</h2>
+<p>Define <strong>everything</strong> in one place:</p>
+<pre><code>your-org-standards/
+├── rulesets/           # Linting rules
+├── formatters/         # Formatting configs (v2)
+├── type-safety/        # Type checker configs (v2)
+├── prompts/            # AI coding standards
+├── hooks/              # Custom validation rules (v2)
+└── tiers/              # Production vs prototype configs
+    ├── production/
+    ├── internal-tool/
+    └── prototype/</code></pre>
+<p>Each project just points to what it needs:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode toml"><code class="sourceCode toml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[project]</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="dt">name</span> <span class="op">=</span> <span class="st">&quot;payment-service&quot;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="kw">[extends]</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="dt">eslint</span> <span class="op">=</span> <span class="st">&quot;github:your-org/standards/tiers/production/rulesets/typescript/5.5/eslint@1.0.0&quot;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="dt">ruff</span> <span class="op">=</span> <span class="st">&quot;github:your-org/standards/tiers/production/rulesets/python/3.12/ruff@1.0.0&quot;</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="kw">[prompts]</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="dt">templates</span> <span class="op">=</span> <span class="op">[</span><span class="st">&quot;typescript/5.5&quot;</span><span class="op">,</span> <span class="st">&quot;python/3.12&quot;</span><span class="op">]</span></span></code></pre></div>
+<p><strong>One repo, versioned tiers, organization-wide
+consistency.</strong></p>
+<p><strong>IMPORTANT</strong>: cmc does not replace linters, formatters,
+coding agents, Docker, etc.</p>
+<p>It verifies that these tools are being used to enforce standards
+across software development teams, and exposes an MCP server to allow
+coding agents to intelligently implement the right checks in the right
+places at the right time.</p>
+<hr />
+<h1 id="what-works-today-v1">What Works Today (v1)</h1>
+<h2 id="the-solution-cmc.toml">The Solution: cmc.toml</h2>
+<p>Define your linting standards once:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode toml"><code class="sourceCode toml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[project]</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="dt">name</span> <span class="op">=</span> <span class="st">&quot;my-project&quot;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="kw">[extends]</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="dt">eslint</span> <span class="op">=</span> <span class="st">&quot;github:chrismlittle123/check-my-code-community/rulesets/typescript/5.5/eslint@1.0.0&quot;</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="dt">ruff</span> <span class="op">=</span> <span class="st">&quot;github:chrismlittle123/check-my-code-community/rulesets/python/3.12/ruff@1.0.0&quot;</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="kw">[rulesets.eslint.rules]</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="dt">&quot;no-var&quot;</span> <span class="op">=</span> <span class="st">&quot;error&quot;</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="dt">&quot;prefer-const&quot;</span> <span class="op">=</span> <span class="st">&quot;error&quot;</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="dt">&quot;eqeqeq&quot;</span> <span class="op">=</span> <span class="op">[</span><span class="st">&quot;error&quot;</span><span class="op">,</span> <span class="st">&quot;always&quot;</span><span class="op">]</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="kw">[rulesets.ruff]</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="dt">line-length</span> <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="kw">[rulesets.ruff.lint]</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="dt">select</span> <span class="op">=</span> <span class="op">[</span><span class="st">&quot;E&quot;</span><span class="op">,</span> <span class="st">&quot;F&quot;</span><span class="op">]</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="kw">[prompts]</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="dt">templates</span> <span class="op">=</span> <span class="op">[</span><span class="st">&quot;typescript/5.5&quot;</span><span class="op">,</span> <span class="st">&quot;python/3.12&quot;</span><span class="op">]</span></span></code></pre></div>
+<p>Then let cmc handle the rest:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cmc</span> generate eslint    <span class="co"># Creates eslint.config.js</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">cmc</span> generate ruff      <span class="co"># Creates ruff.toml</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">cmc</span> check              <span class="co"># Runs both linters</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ex">cmc</span> audit             <span class="co"># Ensures configs haven&#39;t drifted</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="ex">cmc</span> context            <span class="co"># Exports AI coding standards</span></span></code></pre></div>
+<h2 id="commands">Commands</h2>
+<table>
+<colgroup>
+<col style="width: 39%" />
+<col style="width: 60%" />
+</colgroup>
+<thead>
+<tr>
+<th>Command</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>cmc check [path]</code></td>
+<td>Run ESLint + Ruff, unified output</td>
+</tr>
+<tr>
+<td><code>cmc generate &lt;linter&gt;</code></td>
+<td>Generate linter config from cmc.toml</td>
+</tr>
+<tr>
+<td><code>cmc audit [linter]</code></td>
+<td>Audit configs match cmc.toml (CI-friendly)</td>
+</tr>
+<tr>
+<td><code>cmc context --target &lt;tool&gt;</code></td>
+<td>Export standards to AI coding assistants</td>
+</tr>
+<tr>
+<td><code>cmc mcp-server</code></td>
+<td>Start MCP server for AI agents</td>
+</tr>
+</tbody>
+</table>
+<h2 id="example-finding-violations">Example: Finding Violations</h2>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cmc check src/</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ex">src/utils.py:4</span> <span class="pp">[</span><span class="ss">ruff/F401</span><span class="pp">]</span> <span class="kw">`</span><span class="ex">os</span><span class="kw">`</span> imported but unused</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="ex">src/utils.py:5</span> <span class="pp">[</span><span class="ss">ruff/F401</span><span class="pp">]</span> <span class="kw">`</span><span class="ex">sys</span><span class="kw">`</span> imported but unused</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="ex">src/utils.py:6</span> <span class="pp">[</span><span class="ss">ruff/F401</span><span class="pp">]</span> <span class="kw">`</span><span class="ex">json</span><span class="kw">`</span> imported but unused</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="ex">src/utils.py:9</span> <span class="pp">[</span><span class="ss">ruff/E501</span><span class="pp">]</span> Line too long <span class="er">(</span><span class="ex">133</span> <span class="op">&gt;</span> 100<span class="kw">)</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="ex">src/utils.py:13</span> <span class="pp">[</span><span class="ss">ruff/F841</span><span class="pp">]</span> Local variable <span class="kw">`</span><span class="ex">unused_result</span><span class="kw">`</span> is assigned to but never used</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="ex">src/example.ts:4</span> <span class="pp">[</span><span class="ss">eslint/no</span><span class="pp">-</span><span class="ss">var</span><span class="pp">]</span> Unexpected var, use let or const instead.</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="ex">src/example.ts:5</span> <span class="pp">[</span><span class="ss">eslint/no</span><span class="pp">-</span><span class="ss">var</span><span class="pp">]</span> Unexpected var, use let or const instead.</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="ex">src/example.ts:8</span> <span class="pp">[</span><span class="ss">eslint/prefer</span><span class="pp">-</span><span class="ss">const</span><span class="pp">]</span> <span class="st">&#39;greeting&#39;</span> is never reassigned. Use <span class="st">&#39;const&#39;</span> instead.</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="ex">src/example.ts:11</span> <span class="pp">[</span><span class="ss">eslint/eqeqeq</span><span class="pp">]</span> Expected <span class="st">&#39;===&#39;</span> and instead saw <span class="st">&#39;==&#39;</span>.</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="ex">src/example.ts:16</span> <span class="pp">[</span><span class="ss">eslint/no</span><span class="pp">-</span><span class="ss">var</span><span class="pp">]</span> Unexpected var, use let or const instead.</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="ex">src/example.ts:17</span> <span class="pp">[</span><span class="ss">eslint/eqeqeq</span><span class="pp">]</span> Expected <span class="st">&#39;!==&#39;</span> and instead saw <span class="st">&#39;!=&#39;</span>.</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="ex">✗</span> 11 violations found</span></code></pre></div>
+<p>Both languages. One command. Unified format.</p>
+<h2 id="example-ci-pipeline-verification">Example: CI Pipeline
+Verification</h2>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cmc audit</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ex">✓</span> eslint.config.js matches cmc.toml</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="ex">✓</span> ruff.toml matches cmc.toml</span></code></pre></div>
+<p>If someone manually edits a config and it drifts from
+<code>cmc.toml</code>, verification fails:</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cmc audit</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="ex">✗</span> eslint.config.js does not match cmc.toml</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="ex">Run</span> <span class="st">&#39;cmc generate eslint&#39;</span> to fix</span></code></pre></div>
+<h2 id="remote-repositories-community-private">Remote Repositories:
+Community &amp; Private</h2>
+<p>Pull rulesets and prompts from shared repositories instead of
+copy-pasting configs:</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode toml"><code class="sourceCode toml"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[extends]</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Community repo (public) - versioned rulesets for common stacks</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="dt">eslint</span> <span class="op">=</span> <span class="st">&quot;github:chrismlittle123/check-my-code-community/rulesets/typescript/5.5/eslint@1.0.0&quot;</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="dt">ruff</span> <span class="op">=</span> <span class="st">&quot;github:chrismlittle123/check-my-code-community/rulesets/python/3.12/ruff@1.0.0&quot;</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Private repo (your org) - uses SSH keys, no tokens needed</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="dt">eslint</span> <span class="op">=</span> <span class="st">&quot;github:your-org/your-standards/rulesets/typescript/5.5/eslint@1.0.0&quot;</span></span></code></pre></div>
+<h3 id="community-repo-structure">Community Repo Structure</h3>
+<p>The community repo organizes rulesets and prompts by language and
+version:</p>
+<pre><code>check-my-code-community/
+├── rulesets/
+│   ├── typescript/5.5/eslint/
+│   │   └── 1.0.0.toml
+│   └── python/3.12/ruff/
+│       └── 1.0.0.toml
+├── prompts/
+│   ├── typescript/5.5/
+│   │   └── 1.0.0.md
+│   └── python/3.12/
+│       └── 1.0.0.md
+└── rulesets.json / prompts.json   # Manifests</code></pre>
+<p>Browse:
+https://github.com/chrismlittle123/check-my-code-community</p>
+<h3 id="private-repo-for-your-organization">Private Repo for Your
+Organization</h3>
+<p>Set up the same structure for company-specific standards: - Accessed
+via SSH keys (no tokens needed) - Keep proprietary rules secure -
+Version with semantic versioning</p>
+<p><strong>Additive-only inheritance</strong> — Local rules can only
+make things <em>stricter</em>, never weaker. If the base config says
+<code>"no-var" = "error"</code>, you can’t downgrade it to
+<code>"warn"</code>.</p>
+<h2 id="tier-based-coding-standards">Tier-Based Coding Standards</h2>
+<p>Different projects need different levels of rigor.</p>
+<p>A production API needs strict type safety and zero violations. A
+hackathon prototype? Just needs to run.</p>
+<p>Define tiers in your organization’s private repo:</p>
+<pre><code>your-org-standards/
+├── tiers/
+│   ├── production/           # Maximum strictness
+│   │   ├── rulesets/
+│   │   │   ├── typescript/5.5/eslint/1.0.0.toml
+│   │   │   └── python/3.12/ruff/1.0.0.toml
+│   │   └── prompts/
+│   │       └── strict/1.0.0.md
+│   │
+│   ├── internal-tool/        # Moderate strictness
+│   │   └── ...
+│   │
+│   └── prototype/            # Minimal rules
+│       └── ...</code></pre>
+<p>Then reference the appropriate tier:</p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode toml"><code class="sourceCode toml"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[project]</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="dt">name</span> <span class="op">=</span> <span class="st">&quot;payment-service&quot;</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="kw">[extends]</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="dt">eslint</span> <span class="op">=</span> <span class="st">&quot;github:your-org/standards/tiers/production/rulesets/typescript/5.5/eslint@1.0.0&quot;</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="dt">ruff</span> <span class="op">=</span> <span class="st">&quot;github:your-org/standards/tiers/production/rulesets/python/3.12/ruff@1.0.0&quot;</span></span></code></pre></div>
+<h2 id="ai-integration">AI Integration</h2>
+<p>Export coding standards to AI assistants so they follow your
+rules:</p>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Claude Code</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="ex">cmc</span> context <span class="at">--target</span> claude    <span class="co"># Appends to CLAUDE.md</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Cursor</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="ex">cmc</span> context <span class="at">--target</span> cursor    <span class="co"># Appends to .cursorrules</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Codex</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="ex">cmc</span> context <span class="at">--target</span> codex     <span class="co"># Appends to codex.md</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Gemini CLI</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="ex">cmc</span> context <span class="at">--target</span> gemini    <span class="co"># Appends to GEMINI.md</span></span></code></pre></div>
+<p>Configure which prompts to use:</p>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode toml"><code class="sourceCode toml"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[prompts]</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="dt">templates</span> <span class="op">=</span> <span class="op">[</span><span class="st">&quot;typescript/5.5&quot;</span><span class="op">,</span> <span class="st">&quot;python/3.12&quot;</span><span class="op">]</span></span></code></pre></div>
+<h2 id="mcp-server">MCP Server</h2>
+<p>cmc includes an MCP (Model Context Protocol) server that allows AI
+coding agents to interact with the CLI directly. This makes it easier
+for Claude Code, Codex, Gemini, and other AI assistants to:</p>
+<ul>
+<li>Run linting checks and get structured results</li>
+<li>Generate and audit configs</li>
+<li>Access your coding standards programmatically</li>
+<li><strong>Periodically check code as you develop</strong> — ensuring
+standards are enforced throughout the coding process, not just at commit
+time</li>
+</ul>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Start the MCP server</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="ex">cmc</span> mcp-server</span></code></pre></div>
+<p>The MCP server enables AI agents to continuously validate code
+against your standards while you work. Instead of discovering violations
+at the end, the agent can check periodically and fix issues in real-time
+— ensuring the code being produced always matches your organization’s
+standards.</p>
+<h3 id="setting-up-the-mcp-server">Setting Up the MCP Server</h3>
+<p>Add the MCP server to your AI coding assistant’s configuration:</p>
+<p><strong>Claude Code</strong> (<code>~/.claude.json</code> or project
+<code>.mcp.json</code>):</p>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;mcpServers&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;check-my-code&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;command&quot;</span><span class="fu">:</span> <span class="st">&quot;cmc&quot;</span><span class="fu">,</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;args&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="st">&quot;mcp-server&quot;</span><span class="ot">]</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p><strong>Cursor</strong> (<code>.cursor/mcp.json</code>):</p>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;mcpServers&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;check-my-code&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;command&quot;</span><span class="fu">:</span> <span class="st">&quot;cmc&quot;</span><span class="fu">,</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;args&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="st">&quot;mcp-server&quot;</span><span class="ot">]</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<h3 id="available-mcp-tools">Available MCP Tools</h3>
+<p>Once configured, your AI assistant has access to:</p>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>check_files</code></td>
+<td>Lint specific files</td>
+</tr>
+<tr>
+<td><code>check_project</code></td>
+<td>Lint entire project</td>
+</tr>
+<tr>
+<td><code>fix_files</code></td>
+<td>Auto-fix violations</td>
+</tr>
+<tr>
+<td><code>get_guidelines</code></td>
+<td>Fetch coding standards</td>
+</tr>
+<tr>
+<td><code>get_status</code></td>
+<td>Get session state</td>
+</tr>
+</tbody>
+</table>
+<p>This creates a feedback loop where the AI continuously validates
+against your organization’s standards — not just when you commit, but as
+you write code.</p>
+<hr />
+<h1 id="whats-coming-v2">What’s Coming (v2)</h1>
+<h2 id="formatting">Formatting</h2>
+<p>Prettier and ruff, unified under cmc:</p>
+<div class="sourceCode" id="cb18"><pre
+class="sourceCode toml"><code class="sourceCode toml"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[formatters.prettier]</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="dt">semi</span> <span class="op">=</span> <span class="cn">false</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="dt">singleQuote</span> <span class="op">=</span> <span class="cn">true</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="kw">[formatters.ruff]</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="dt">line-length</span> <span class="op">=</span> <span class="dv">100</span></span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cmc</span> format              <span class="co"># Run all formatters</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="ex">cmc</span> generate prettier   <span class="co"># Generate .prettierrc</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="ex">cmc</span> generate ruff      <span class="co"># Generate ruff.toml</span></span></code></pre></div>
+<h2 id="type-safety">Type Safety</h2>
+<p>TypeScript and Python type checking:</p>
+<div class="sourceCode" id="cb20"><pre
+class="sourceCode toml"><code class="sourceCode toml"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[type-safety.typescript]</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="dt">strict</span> <span class="op">=</span> <span class="cn">true</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="dt">noImplicitAny</span> <span class="op">=</span> <span class="cn">true</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="kw">[type-safety.python]</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="dt">tool</span> <span class="op">=</span> <span class="st">&quot;mypy&quot;</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="dt">strict</span> <span class="op">=</span> <span class="cn">true</span></span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cmc</span> typecheck           <span class="co"># Run type checkers</span></span></code></pre></div>
+<h2 id="security-checks">Security Checks</h2>
+<p>Catch exposed secrets and vulnerabilities before they hit
+production:</p>
+<div class="sourceCode" id="cb22"><pre
+class="sourceCode toml"><code class="sourceCode toml"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[security]</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Detect exposed secrets</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="dt">secrets</span> <span class="op">=</span> <span class="cn">true</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="dt">patterns</span> <span class="op">=</span> <span class="op">[</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;API_KEY&quot;</span><span class="op">,</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;SECRET&quot;</span><span class="op">,</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;PASSWORD&quot;</span><span class="op">,</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;aws_access_key_id&quot;</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a><span class="op">]</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Scan for known vulnerabilities</span></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a><span class="dt">vulnerabilities</span> <span class="op">=</span> <span class="cn">true</span></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a><span class="dt">severity</span> <span class="op">=</span> <span class="st">&quot;high&quot;</span>  <span class="co"># Block on high/critical only</span></span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cmc</span> security            <span class="co"># Run security scans</span></span></code></pre></div>
+<h2 id="complexity-checks">Complexity Checks</h2>
+<p>Keep your codebase maintainable:</p>
+<div class="sourceCode" id="cb24"><pre
+class="sourceCode toml"><code class="sourceCode toml"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[complexity]</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Cyclomatic complexity threshold</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="dt">max-complexity</span> <span class="op">=</span> <span class="dv">10</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Maximum dependencies per file</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="dt">max-dependencies</span> <span class="op">=</span> <span class="dv">15</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Maximum file length</span></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a><span class="dt">max-lines</span> <span class="op">=</span> <span class="dv">500</span></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Maximum function length</span></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a><span class="dt">max-function-lines</span> <span class="op">=</span> <span class="dv">50</span></span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cmc</span> complexity          <span class="co"># Run complexity analysis</span></span></code></pre></div>
+<h2 id="test-coverage">Test Coverage</h2>
+<p>Enforce minimum test coverage thresholds across different test
+types:</p>
+<div class="sourceCode" id="cb26"><pre
+class="sourceCode toml"><code class="sourceCode toml"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[coverage]</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Minimum coverage thresholds (percentage)</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="dt">unit</span> <span class="op">=</span> <span class="dv">80</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="dt">integration</span> <span class="op">=</span> <span class="dv">60</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="dt">functional</span> <span class="op">=</span> <span class="dv">50</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a><span class="dt">e2e</span> <span class="op">=</span> <span class="dv">30</span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Fail CI if thresholds not met</span></span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a><span class="dt">enforce</span> <span class="op">=</span> <span class="cn">true</span></span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Coverage tool</span></span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a><span class="dt">tool</span> <span class="op">=</span> <span class="st">&quot;nyc&quot;</span>  <span class="co"># or &quot;coverage.py&quot; for Python</span></span></code></pre></div>
+<div class="sourceCode" id="cb27"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cmc</span> coverage            <span class="co"># Run coverage analysis</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="ex">cmc</span> coverage <span class="at">--report</span>   <span class="co"># Generate detailed report</span></span></code></pre></div>
+<h2 id="custom-hooks">Custom Hooks</h2>
+<p>Define your own validation rules:</p>
+<div class="sourceCode" id="cb28"><pre
+class="sourceCode toml"><code class="sourceCode toml"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[hooks.directory-naming]</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="dt">pattern</span> <span class="op">=</span> <span class="st">&quot;kebab-case&quot;</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="dt">paths</span> <span class="op">=</span> <span class="op">[</span><span class="st">&quot;src/**&quot;</span><span class="op">]</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="dt">message</span> <span class="op">=</span> <span class="st">&quot;Directory names must be kebab-case&quot;</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a><span class="kw">[hooks.no-console-in-prod]</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a><span class="dt">pattern</span> <span class="op">=</span> <span class="st">&quot;console</span><span class="sc">\\</span><span class="st">.(log|debug)&quot;</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a><span class="dt">paths</span> <span class="op">=</span> <span class="op">[</span><span class="st">&quot;src/**/*.ts&quot;</span><span class="op">]</span></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a><span class="dt">exclude</span> <span class="op">=</span> <span class="op">[</span><span class="st">&quot;src/**/*.test.ts&quot;</span><span class="op">]</span></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a><span class="dt">severity</span> <span class="op">=</span> <span class="st">&quot;error&quot;</span></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a><span class="kw">[hooks.require-license-header]</span></span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a><span class="dt">pattern</span> <span class="op">=</span> <span class="st">&quot;^// Copyright&quot;</span></span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a><span class="dt">paths</span> <span class="op">=</span> <span class="op">[</span><span class="st">&quot;src/**/*.ts&quot;</span><span class="op">]</span></span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a><span class="dt">message</span> <span class="op">=</span> <span class="st">&quot;All source files must have a license header&quot;</span></span></code></pre></div>
+<h2 id="tool-enforcement">Tool Enforcement</h2>
+<p>Ensure required development tools are installed and configured:</p>
+<div class="sourceCode" id="cb29"><pre
+class="sourceCode toml"><code class="sourceCode toml"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="kw">[tools]</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Required tools - fail if not present</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="dt">required</span> <span class="op">=</span> <span class="op">[</span><span class="st">&quot;mise&quot;</span><span class="op">,</span> <span class="st">&quot;docker&quot;</span><span class="op">,</span> <span class="st">&quot;node&quot;</span><span class="op">,</span> <span class="st">&quot;python&quot;</span><span class="op">]</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Version constraints</span></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a><span class="kw">[tools.versions]</span></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a><span class="dt">node</span> <span class="op">=</span> <span class="st">&quot;&gt;=20.0.0&quot;</span></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a><span class="dt">python</span> <span class="op">=</span> <span class="st">&quot;&gt;=3.12&quot;</span></span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a><span class="dt">docker</span> <span class="op">=</span> <span class="st">&quot;&gt;=24.0.0&quot;</span></span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Enforce tool manager</span></span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a><span class="kw">[tools.manager]</span></span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a><span class="dt">use</span> <span class="op">=</span> <span class="st">&quot;mise&quot;</span>  <span class="co"># or &quot;asdf&quot;, &quot;nvm&quot;, etc.</span></span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a><span class="dt">config-required</span> <span class="op">=</span> <span class="cn">true</span>  <span class="co"># .mise.toml or .tool-versions must exist</span></span></code></pre></div>
+<div class="sourceCode" id="cb30"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="ex">cmc</span> tools              <span class="co"># Check all required tools</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="ex">cmc</span> tools <span class="at">--install</span>    <span class="co"># Attempt to install missing tools</span></span></code></pre></div>
+<hr />
+<h2 id="design-principles">Design Principles</h2>
+<ul>
+<li><strong>Central, versioned repository</strong> — All standards in
+one place, with semantic versioning</li>
+<li><strong>Tier-based enforcement</strong> — Different projects,
+different rules, same infrastructure</li>
+<li><strong>cmc.toml is authoritative</strong> — It’s the source of
+truth, not the generated configs</li>
+<li><strong>Graceful degradation</strong> — Works with whatever tools
+you have installed</li>
+<li><strong>Delegates to native tools</strong> — cmc doesn’t reinvent
+linting/formatting, it orchestrates</li>
+<li><strong>AI-agnostic</strong> — Export to any coding assistant</li>
+</ul>
+<h2 id="quick-start">Quick Start</h2>
+<div class="sourceCode" id="cb31"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Install</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="ex">npm</span> install check-my-code</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate configs from cmc.toml</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="ex">cmc</span> generate eslint</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a><span class="ex">cmc</span> generate ruff</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Run linters</span></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a><span class="ex">cmc</span> check</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Audit configs match (for CI)</span></span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a><span class="ex">cmc</span> audit</span></code></pre></div>
+<h2 id="running-the-demo">Running the Demo</h2>
+<div class="sourceCode" id="cb32"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./demo.sh</span></span></code></pre></div>
+<p>Press ENTER to advance through each step.</p>
+<hr />
+<p>Documentation: https://github.com/chrismlittle123/check-my-code</p>
+</body></html>
