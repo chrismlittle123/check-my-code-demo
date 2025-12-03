@@ -121,7 +121,7 @@ cmc context            # Exports AI coding standards
 | `cmc generate <linter>` | Generate linter config from cmc.toml |
 | `cmc audit [linter]` | Audit configs match cmc.toml (CI-friendly) |
 | `cmc context --target <tool>` | Export standards to AI coding assistants |
-| `cmc mcp` | Start MCP server for AI agents |
+| `cmc mcp-server` | Start MCP server for AI agents |
 
 ## Example: Finding Violations
 
@@ -279,7 +279,7 @@ cmc includes an MCP (Model Context Protocol) server that allows AI coding agents
 
 ```bash
 # Start the MCP server
-cmc mcp
+cmc mcp-server
 ```
 
 The MCP server enables AI agents to continuously validate code against your standards while you work. Instead of discovering violations at the end, the agent can check periodically and fix issues in real-time — ensuring the code being produced always matches your organization's standards.
@@ -294,7 +294,7 @@ Add the MCP server to your AI coding assistant's configuration:
   "mcpServers": {
     "check-my-code": {
       "command": "cmc",
-      "args": ["mcp"]
+      "args": ["mcp-server"]
     }
   }
 }
@@ -306,7 +306,7 @@ Add the MCP server to your AI coding assistant's configuration:
   "mcpServers": {
     "check-my-code": {
       "command": "cmc",
-      "args": ["mcp"]
+      "args": ["mcp-server"]
     }
   }
 }

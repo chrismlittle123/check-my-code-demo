@@ -143,9 +143,9 @@ wait
 # MCP Server
 echo ""
 echo -e "${BOLD_CYAN}━━━ MCP Server for AI Agents ━━━${COLOR_RESET}"
-p "# The 'mcp' command starts an MCP (Model Context Protocol) server"
+p "# The 'mcp-server' command starts an MCP (Model Context Protocol) server"
 p "# This allows AI agents to interact with cmc programmatically"
-pe "cmc mcp --help"
+pe "cmc mcp-server --help"
 wait
 
 echo ""
@@ -162,7 +162,7 @@ echo '  {'
 echo '    "mcpServers": {'
 echo '      "check-my-code": {'
 echo '        "command": "cmc",'
-echo '        "args": ["mcp"]'
+echo '        "args": ["mcp-server"]'
 echo '      }'
 echo '    }'
 echo '  }'
@@ -180,7 +180,7 @@ echo -e "  ${BOLD_WHITE}cmc check${COLOR_RESET}    → Run ESLint + Ruff with un
 echo -e "  ${BOLD_WHITE}cmc generate${COLOR_RESET} → Create linter configs from cmc.toml"
 echo -e "  ${BOLD_WHITE}cmc audit${COLOR_RESET}    → Ensure configs match cmc.toml"
 echo -e "  ${BOLD_WHITE}cmc context${COLOR_RESET}  → Export standards to AI tools"
-echo -e "  ${BOLD_WHITE}cmc mcp${COLOR_RESET}      → Start MCP server for AI agents"
+echo -e "  ${BOLD_WHITE}cmc mcp-server${COLOR_RESET} → Start MCP server for AI agents"
 echo ""
 echo -e "${BOLD_GREEN}Remote Inheritance:${COLOR_RESET}"
 echo -e "  🌐 Community: ${DIM}github:chrismlittle123/check-my-code-community/...${COLOR_RESET}"
