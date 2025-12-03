@@ -1,0 +1,26 @@
+{
+  "name": "check-my-code-demo",
+  "version": "1.0.0",
+  "description": "**One config. One command. Consistent code quality.**",
+  "main": "eslint.config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chrismlittle123/check-my-code-demo.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/chrismlittle123/check-my-code-demo/issues"
+  },
+  "homepage": "https://github.com/chrismlittle123/check-my-code-demo#readme",
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "eslint": "^9.39.1",
+    "typescript-eslint": "^8.48.1"
+  }
+}
