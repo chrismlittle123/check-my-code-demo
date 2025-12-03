@@ -273,13 +273,14 @@ cmc includes an MCP (Model Context Protocol) server that allows AI coding agents
 - Run linting checks and get structured results
 - Generate and verify configs
 - Access your coding standards programmatically
+- **Periodically check code as you develop** — ensuring standards are enforced throughout the coding process, not just at commit time
 
 ```bash
 # Start the MCP server
 cmc mcp
 ```
 
-The MCP server exposes cmc's functionality through a standardized protocol, enabling seamless integration with AI-powered development tools.
+The MCP server enables AI agents to continuously validate code against your standards while you work. Instead of discovering violations at the end, the agent can check periodically and fix issues in real-time — ensuring the code being produced always matches your organization's standards.
 
 ---
 
