@@ -8,6 +8,7 @@ A CLI tool that uses `cmc.toml` as the single source of truth for **all** coding
 |----------|-------|--------|
 | **Linting** | ESLint, Ruff | v1 ✓ |
 | **AI Prompts** | Claude, Cursor, Copilot | v1 ✓ |
+| **MCP Server** | For AI coding agents | v1 ✓ |
 | **Formatting** | Prettier, Black | v2 |
 | **Type Safety** | TypeScript strict, mypy/pyright | v2 |
 | **Custom Hooks** | Your own rules | v2 |
@@ -260,27 +261,42 @@ Configure which prompts to use:
 templates = ["typescript/5.5", "python/3.12"]
 ```
 
+## MCP Server
+
+cmc includes an MCP (Model Context Protocol) server that allows AI coding agents to interact with the CLI directly. This makes it easier for Claude Code, Codex, Copilot, and other AI assistants to:
+
+- Run linting checks and get structured results
+- Generate and verify configs
+- Access your coding standards programmatically
+
+```bash
+# Start the MCP server
+cmc mcp
+```
+
+The MCP server exposes cmc's functionality through a standardized protocol, enabling seamless integration with AI-powered development tools.
+
 ---
 
 # What's Coming (v2)
 
 ## Formatting
 
-Prettier and Black, unified under cmc:
+Prettier and ruff, unified under cmc:
 
 ```toml
 [formatters.prettier]
 semi = false
 singleQuote = true
 
-[formatters.black]
+[formatters.ruff]
 line-length = 100
 ```
 
 ```bash
 cmc format              # Run all formatters
 cmc generate prettier   # Generate .prettierrc
-cmc generate black      # Generate pyproject.toml
+cmc generate ruff      # Generate ruff.toml
 ```
 
 ## Type Safety
