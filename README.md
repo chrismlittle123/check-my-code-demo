@@ -312,10 +312,17 @@ Add the MCP server to your AI coding assistant's configuration:
 }
 ```
 
-Once configured, your AI assistant can:
-- Run `cmc check` to find violations as you code
-- Run `cmc audit` to verify configs haven't drifted
-- Access your `cmc.toml` standards programmatically
+### Available MCP Tools
+
+Once configured, your AI assistant has access to:
+
+| Tool | Description |
+|------|-------------|
+| `check_files` | Lint specific files |
+| `check_project` | Lint entire project |
+| `fix_files` | Auto-fix violations |
+| `get_guidelines` | Fetch coding standards |
+| `get_status` | Get session state |
 
 This creates a feedback loop where the AI continuously validates against your organization's standards — not just when you commit, but as you write code.
 
