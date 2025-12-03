@@ -461,6 +461,32 @@ paths = ["src/**/*.ts"]
 message = "All source files must have a license header"
 ```
 
+## Tool Enforcement
+
+Ensure required development tools are installed and configured:
+
+```toml
+[tools]
+# Required tools - fail if not present
+required = ["mise", "docker", "node", "python"]
+
+# Version constraints
+[tools.versions]
+node = ">=20.0.0"
+python = ">=3.12"
+docker = ">=24.0.0"
+
+# Enforce tool manager
+[tools.manager]
+use = "mise"  # or "asdf", "nvm", etc.
+config-required = true  # .mise.toml or .tool-versions must exist
+```
+
+```bash
+cmc tools              # Check all required tools
+cmc tools --install    # Attempt to install missing tools
+```
+
 ---
 
 ## Design Principles
