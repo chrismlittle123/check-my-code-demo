@@ -9,11 +9,11 @@ A CLI tool that uses `cmc.toml` as the single source of truth for **all** coding
 | **Linting** | ESLint, Ruff | v1 ✓ |
 | **AI Prompts** | Claude, Cursor, Codex, Gemini | v1 ✓ |
 | **MCP Server** | For AI coding agents | v1 ✓ |
-| **Formatting** | Prettier, Black | v2 |
-| **Type Safety** | TypeScript strict, mypy/pyright | v2 |
+| **Formatting** | Prettier, Ruff | v2 |
+| **Type Safety** | TypeScript strict, mypy | v2 |
 | **Security Checks** | Exposed secrets, vulnerabilities | v2 |
 | **Complexity Checks** | Dependencies, cyclomatic complexity | v2 |
-| **Custom Hooks** | Your own rules | v2 |
+| **Custom Hooks** | Your own rules - eg. file naming, versioning, etc. | v2 |
 
 All versioned in a central repository with tier-based enforcement.
 
@@ -120,6 +120,7 @@ cmc context            # Exports AI coding standards
 | `cmc generate <linter>` | Generate linter config from cmc.toml |
 | `cmc audit [linter]` | Audit configs match cmc.toml (CI-friendly) |
 | `cmc context --target <tool>` | Export standards to AI coding assistants |
+| `cmc mcp` | Start MCP server for AI agents |
 
 ## Example: Finding Violations
 
@@ -281,6 +282,41 @@ cmc mcp
 ```
 
 The MCP server enables AI agents to continuously validate code against your standards while you work. Instead of discovering violations at the end, the agent can check periodically and fix issues in real-time — ensuring the code being produced always matches your organization's standards.
+
+### Setting Up the MCP Server
+
+Add the MCP server to your AI coding assistant's configuration:
+
+**Claude Code** (`~/.claude.json` or project `.mcp.json`):
+```json
+{
+  "mcpServers": {
+    "check-my-code": {
+      "command": "npx",
+      "args": ["cmc", "mcp"]
+    }
+  }
+}
+```
+
+**Cursor** (`.cursor/mcp.json`):
+```json
+{
+  "mcpServers": {
+    "check-my-code": {
+      "command": "npx",
+      "args": ["cmc", "mcp"]
+    }
+  }
+}
+```
+
+Once configured, your AI assistant can:
+- Run `cmc check` to find violations as you code
+- Run `cmc audit` to verify configs haven't drifted
+- Access your `cmc.toml` standards programmatically
+
+This creates a feedback loop where the AI continuously validates against your organization's standards — not just when you commit, but as you write code.
 
 ---
 

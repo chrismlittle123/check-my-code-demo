@@ -140,6 +140,35 @@ p "# Preview context for Claude Code"
 pe "npx cmc context --target claude --stdout"
 wait
 
+# MCP Server
+echo ""
+echo -e "${BOLD_CYAN}━━━ MCP Server for AI Agents ━━━${COLOR_RESET}"
+p "# The 'mcp' command starts an MCP (Model Context Protocol) server"
+p "# This allows AI agents to interact with cmc programmatically"
+pe "npx cmc mcp --help"
+wait
+
+echo ""
+p "# 🔄 The MCP server enables CONTINUOUS validation while you code"
+p "# → AI agents can run 'cmc check' periodically as you develop"
+p "# → Violations are caught and fixed in real-time, not at commit time"
+p "# → Works with Claude Code, Codex, Gemini, Cursor, and more"
+wait
+
+echo ""
+p "# To use with Claude Code, add to your MCP settings:"
+echo -e "${DIM}"
+echo '  {'
+echo '    "mcpServers": {'
+echo '      "check-my-code": {'
+echo '        "command": "npx",'
+echo '        "args": ["cmc", "mcp"]'
+echo '      }'
+echo '    }'
+echo '  }'
+echo -e "${COLOR_RESET}"
+wait
+
 # Wrap up
 echo ""
 echo -e "${BOLD_MAGENTA}╔══════════════════════════════════════════╗${COLOR_RESET}"
@@ -149,8 +178,9 @@ echo ""
 echo -e "${BOLD_CYAN}Commands:${COLOR_RESET}"
 echo -e "  ${BOLD_WHITE}cmc check${COLOR_RESET}    → Run ESLint + Ruff with unified output"
 echo -e "  ${BOLD_WHITE}cmc generate${COLOR_RESET} → Create linter configs from cmc.toml"
-echo -e "  ${BOLD_WHITE}cmc audit${COLOR_RESET}   → Ensure configs match cmc.toml"
+echo -e "  ${BOLD_WHITE}cmc audit${COLOR_RESET}    → Ensure configs match cmc.toml"
 echo -e "  ${BOLD_WHITE}cmc context${COLOR_RESET}  → Export standards to AI tools"
+echo -e "  ${BOLD_WHITE}cmc mcp${COLOR_RESET}      → Start MCP server for AI agents"
 echo ""
 echo -e "${BOLD_GREEN}Remote Inheritance:${COLOR_RESET}"
 echo -e "  🌐 Community: ${DIM}github:chrismlittle123/check-my-code-community/...${COLOR_RESET}"
