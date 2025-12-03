@@ -39,12 +39,12 @@ wait
 
 # Show version
 p "# First, let's check the version of cmc"
-pe "npx cmc --version"
+pe "cmc --version"
 wait
 
 # Show help
 p "# Let's see all available commands"
-pe "npx cmc --help"
+pe "cmc --help"
 wait
 
 # Show the cmc.toml configuration
@@ -82,24 +82,24 @@ echo ""
 echo -e "${BOLD_CYAN}━━━ Generate Linter Configs ━━━${COLOR_RESET}"
 p "# The 'generate' command creates linter configs from cmc.toml"
 p "# It merges local rules with inherited remote rules"
-pe "npx cmc generate --help"
+pe "cmc generate --help"
 wait
 
 echo ""
 p "# Generate ESLint config (merges community + private + local rules)"
-pe "npx cmc generate eslint --force"
+pe "cmc generate eslint --force"
 wait
 
 echo ""
 p "# Generate Ruff config"
-pe "npx cmc generate ruff --force"
+pe "cmc generate ruff --force"
 wait
 
 # Check command - find violations
 echo ""
 echo -e "${BOLD_RED}━━━ Find Violations ━━━${COLOR_RESET}"
 p "# Now let's run 'cmc check' to find all violations"
-pe "npx cmc check src/"
+pe "cmc check src/"
 wait
 
 echo ""
@@ -112,7 +112,7 @@ wait
 echo ""
 echo -e "${BOLD_BLUE}━━━ CI/CD Integration ━━━${COLOR_RESET}"
 p "# For CI pipelines, use --json for machine-readable output"
-pe "npx cmc check src/ --json"
+pe "cmc check src/ --json"
 wait
 
 # Audit command
@@ -120,14 +120,14 @@ echo ""
 echo -e "${BOLD_GREEN}━━━ Config Verification ━━━${COLOR_RESET}"
 p "# The 'audit' command ensures configs match cmc.toml"
 p "# Use this in CI to catch config drift"
-pe "npx cmc audit"
+pe "cmc audit"
 wait
 
 # Context command
 echo ""
 echo -e "${BOLD_MAGENTA}━━━ AI Integration ━━━${COLOR_RESET}"
 p "# The 'context' command exports coding standards to AI tools"
-pe "npx cmc context --help"
+pe "cmc context --help"
 wait
 
 echo ""
@@ -137,7 +137,7 @@ wait
 
 echo ""
 p "# Preview context for Claude Code"
-pe "npx cmc context --target claude --stdout"
+pe "cmc context --target claude --stdout"
 wait
 
 # MCP Server
@@ -145,7 +145,7 @@ echo ""
 echo -e "${BOLD_CYAN}━━━ MCP Server for AI Agents ━━━${COLOR_RESET}"
 p "# The 'mcp' command starts an MCP (Model Context Protocol) server"
 p "# This allows AI agents to interact with cmc programmatically"
-pe "npx cmc mcp --help"
+pe "cmc mcp --help"
 wait
 
 echo ""
@@ -161,8 +161,8 @@ echo -e "${DIM}"
 echo '  {'
 echo '    "mcpServers": {'
 echo '      "check-my-code": {'
-echo '        "command": "npx",'
-echo '        "args": ["cmc", "mcp"]'
+echo '        "command": "cmc",'
+echo '        "args": ["mcp"]'
 echo '      }'
 echo '    }'
 echo '  }'

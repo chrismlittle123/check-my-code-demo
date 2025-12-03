@@ -292,8 +292,8 @@ Add the MCP server to your AI coding assistant's configuration:
 {
   "mcpServers": {
     "check-my-code": {
-      "command": "npx",
-      "args": ["cmc", "mcp"]
+      "command": "cmc",
+      "args": ["mcp"]
     }
   }
 }
@@ -304,8 +304,8 @@ Add the MCP server to your AI coding assistant's configuration:
 {
   "mcpServers": {
     "check-my-code": {
-      "command": "npx",
-      "args": ["cmc", "mcp"]
+      "command": "cmc",
+      "args": ["mcp"]
     }
   }
 }
