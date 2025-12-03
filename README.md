@@ -73,6 +73,11 @@ templates = ["typescript/5.5", "python/3.12"]
 
 **One repo, versioned tiers, organization-wide consistency.**
 
+**IMPORTANT**:
+ cmc does not replace linters, formatters, coding agents, Docker, etc. 
+ 
+ It verifies that these tools are being used to enforce standards across software development teams, and exposes an MCP server to allow coding agents to intelligently implement the right checks in the right places at the right time.
+
 ---
 
 # What Works Today (v1)
