@@ -7,7 +7,7 @@ A CLI tool that uses `cmc.toml` as the single source of truth for **all** coding
 | Category | Tools | Status |
 |----------|-------|--------|
 | **Linting** | ESLint, Ruff | v1 ✓ |
-| **AI Prompts** | Claude, Cursor, Copilot | v1 ✓ |
+| **AI Prompts** | Claude, Cursor, Codex, Gemini | v1 ✓ |
 | **MCP Server** | For AI coding agents | v1 ✓ |
 | **Formatting** | Prettier, Black | v2 |
 | **Type Safety** | TypeScript strict, mypy/pyright | v2 |
@@ -252,8 +252,11 @@ cmc context --target claude    # Appends to CLAUDE.md
 # Cursor
 cmc context --target cursor    # Appends to .cursorrules
 
-# GitHub Copilot
-cmc context --target copilot   # Appends to .github/copilot-instructions.md
+# Codex
+cmc context --target codex     # Appends to codex.md
+
+# Gemini CLI
+cmc context --target gemini    # Appends to GEMINI.md
 ```
 
 Configure which prompts to use:
@@ -265,7 +268,7 @@ templates = ["typescript/5.5", "python/3.12"]
 
 ## MCP Server
 
-cmc includes an MCP (Model Context Protocol) server that allows AI coding agents to interact with the CLI directly. This makes it easier for Claude Code, Codex, Copilot, and other AI assistants to:
+cmc includes an MCP (Model Context Protocol) server that allows AI coding agents to interact with the CLI directly. This makes it easier for Claude Code, Codex, Gemini, and other AI assistants to:
 
 - Run linting checks and get structured results
 - Generate and verify configs
