@@ -108,7 +108,7 @@ Then let cmc handle the rest:
 cmc generate eslint    # Creates eslint.config.js
 cmc generate ruff      # Creates ruff.toml
 cmc check              # Runs both linters
-cmc verify             # Ensures configs haven't drifted
+cmc audit             # Ensures configs haven't drifted
 cmc context            # Exports AI coding standards
 ```
 
@@ -118,7 +118,7 @@ cmc context            # Exports AI coding standards
 |---------|--------------|
 | `cmc check [path]` | Run ESLint + Ruff, unified output |
 | `cmc generate <linter>` | Generate linter config from cmc.toml |
-| `cmc verify [linter]` | Verify configs match cmc.toml (CI-friendly) |
+| `cmc audit [linter]` | Audit configs match cmc.toml (CI-friendly) |
 | `cmc context --target <tool>` | Export standards to AI coding assistants |
 
 ## Example: Finding Violations
@@ -146,7 +146,7 @@ Both languages. One command. Unified format.
 ## Example: CI Pipeline Verification
 
 ```bash
-$ cmc verify
+$ cmc audit
 
 ✓ eslint.config.js matches cmc.toml
 ✓ ruff.toml matches cmc.toml
@@ -155,7 +155,7 @@ $ cmc verify
 If someone manually edits a config and it drifts from `cmc.toml`, verification fails:
 
 ```bash
-$ cmc verify
+$ cmc audit
 
 ✗ eslint.config.js does not match cmc.toml
   Run 'cmc generate eslint' to fix
@@ -271,7 +271,7 @@ templates = ["typescript/5.5", "python/3.12"]
 cmc includes an MCP (Model Context Protocol) server that allows AI coding agents to interact with the CLI directly. This makes it easier for Claude Code, Codex, Gemini, and other AI assistants to:
 
 - Run linting checks and get structured results
-- Generate and verify configs
+- Generate and audit configs
 - Access your coding standards programmatically
 - **Periodically check code as you develop** — ensuring standards are enforced throughout the coding process, not just at commit time
 
@@ -416,8 +416,8 @@ cmc generate ruff
 # Run linters
 cmc check
 
-# Verify configs match (for CI)
-cmc verify
+# Audit configs match (for CI)
+cmc audit
 ```
 
 ## Running the Demo

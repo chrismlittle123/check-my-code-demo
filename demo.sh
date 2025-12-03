@@ -115,12 +115,12 @@ p "# For CI pipelines, use --json for machine-readable output"
 pe "npx cmc check src/ --json"
 wait
 
-# Verify command
+# Audit command
 echo ""
 echo -e "${BOLD_GREEN}━━━ Config Verification ━━━${COLOR_RESET}"
-p "# The 'verify' command ensures configs match cmc.toml"
+p "# The 'audit' command ensures configs match cmc.toml"
 p "# Use this in CI to catch config drift"
-pe "npx cmc verify"
+pe "npx cmc audit"
 wait
 
 # Context command
@@ -149,7 +149,7 @@ echo ""
 echo -e "${BOLD_CYAN}Commands:${COLOR_RESET}"
 echo -e "  ${BOLD_WHITE}cmc check${COLOR_RESET}    → Run ESLint + Ruff with unified output"
 echo -e "  ${BOLD_WHITE}cmc generate${COLOR_RESET} → Create linter configs from cmc.toml"
-echo -e "  ${BOLD_WHITE}cmc verify${COLOR_RESET}   → Ensure configs match cmc.toml"
+echo -e "  ${BOLD_WHITE}cmc audit${COLOR_RESET}   → Ensure configs match cmc.toml"
 echo -e "  ${BOLD_WHITE}cmc context${COLOR_RESET}  → Export standards to AI tools"
 echo ""
 echo -e "${BOLD_GREEN}Remote Inheritance:${COLOR_RESET}"
